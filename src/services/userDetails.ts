@@ -1,14 +1,6 @@
 import api from './api';
 import type { UserDetails, ApiResponse } from '@/types';
 
-interface UserDetailsData {
-    name: string;
-    role: string;
-    description: string;
-    socialMedias: string[];
-    profilePhoto?: string;
-}
-
 export const userDetailsService = {
     async get(): Promise<UserDetails | null> {
         const response = await api.get<ApiResponse<UserDetails>>('/user');
