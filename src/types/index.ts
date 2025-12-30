@@ -76,6 +76,7 @@ export interface Project {
     coverImage: string | null;
     contentImages: string[];
     publishedAt: string | null;
+    highlighted?: boolean;
     createdAt: string;
     updatedAt: string;
     projectSkills?: {

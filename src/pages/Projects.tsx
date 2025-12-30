@@ -25,6 +25,7 @@ const projectSchema = z.object({
     contentImages: z.any().optional(),
     publishedAt: z.string().optional(),
     published: z.boolean().optional(),
+    highlighted: z.boolean().optional(),
     skillIds: z.array(z.string()).optional(),
 });
 
@@ -56,10 +57,13 @@ export default function Projects() {
         defaultValues: {
             content: '',
             skillIds: [],
+            published: false,
+            highlighted: false,
         },
     });
 
     const titleValue = watch('title');
+    const publishedValue = watch('published');
 
     useEffect(() => {
         loadData();
@@ -74,6 +78,12 @@ export default function Projects() {
             setValue('slug', slug);
         }
     }, [titleValue, editingProject, setValue]);
+
+    useEffect(() => {
+        if (!publishedValue) {
+            setValue('highlighted', false);
+        }
+    }, [publishedValue, setValue]);
 
     const loadData = async () => {
         try {
@@ -99,6 +109,7 @@ export default function Projects() {
             setValue('content', project.content);
             setValue('publishedAt', project.publishedAt ? format(new Date(project.publishedAt), 'yyyy-MM-dd') : '');
             setValue('published', (project as any).published || false);
+            setValue('highlighted', project.highlighted || false);
             setValue('skillIds', project.projectSkills?.map(ps => ps.skill.id) || []);
             setCoverPreview(project.coverImage);
             setPreviewImages(project.contentImages || []);
@@ -112,6 +123,7 @@ export default function Projects() {
                 content: '',
                 publishedAt: '',
                 published: false,
+                highlighted: false,
                 skillIds: [],
             });
             setCoverPreview(null);
@@ -140,6 +152,7 @@ export default function Projects() {
             formData.append('content', data.content);
 
             formData.append('published', data.published ? 'true' : 'false');
+            formData.append('highlighted', data.highlighted ? 'true' : 'false');
 
             if (data.published) {
                 formData.append('publishedAt', new Date().toISOString());
@@ -426,6 +439,19 @@ export default function Projects() {
                         />
                         <label htmlFor="published" className="text-sm font-medium text-gray-300">
                             Mark as Published
+                        </label>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                        <input
+                            type="checkbox"
+                            id="highlighted"
+                            disabled={isSubmitting || !publishedValue}
+                            {...register('highlighted')}
+                            className="w-4 h-4 text-primary-600 bg-gray-800 border-gray-700 rounded focus:ring-primary-500 focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        />
+                        <label htmlFor="highlighted" className="text-sm font-medium text-gray-300">
+                            Mark as Highlighted
                         </label>
                     </div>
 
